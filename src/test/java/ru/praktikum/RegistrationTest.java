@@ -3,6 +3,7 @@ package ru.praktikum;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,6 +15,14 @@ public class RegistrationTest extends BaseTest {
     MainPage mainPage;
     private String email;
     private String password;
+
+    @After
+    public void tearDown() {
+        UserOperations userOperations = new UserOperations();
+        userOperations.authorizationUserForGetToken(email, password);
+        userOperations.delete();
+        webdriver().driver().close();
+    }
 
     @Test
     @DisplayName("Successful user Authorization")
@@ -42,11 +51,6 @@ public class RegistrationTest extends BaseTest {
         loginPage.clickButtonEnter();
 
         Assert.assertTrue("Страница 'Соберите бургер' авторизованного пользователя не открылась", mainPage.checkVisibleButtonPlaceOrder());
-
-        UserOperations userOperations = new UserOperations();
-        userOperations.authorizationUserForGetToken(email, password);
-        userOperations.delete();
-        webdriver().driver().close();
     }
 
     @Test
@@ -69,6 +73,7 @@ public class RegistrationTest extends BaseTest {
         registerPage.setFieldEmail(email);
         registerPage.setFieldPassword(password);
         registerPage.clickButtonRegister();
+
         Assert.assertTrue("Отсутствует предупреждение 'Некорректный пароль'", registerPage.checkVisibleLabelErrorFieldPassword());
     }
 }
